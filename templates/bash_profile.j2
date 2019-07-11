@@ -1,0 +1,65 @@
+#############################
+##  .bash_profile/.bashrc  ##
+#############################
+## written by Matt DePorter #
+#############################
+
+######################
+# Source extra files #
+######################
+bash_files="{{ dotfiles_to_include }}"
+
+# Load each file into profile, one by one
+for f in $bash_files; do
+  # Verify that file exists before loading.
+  if [ -f $HOME/.dotfiles/$f ]; then
+    source $HOME/.dotfiles/$f
+  fi
+done
+
+{% if ansible_system == "Linux" %}
+# Source global definitions
+if [ -f /etc/bashrc ]; then
+        . /etc/bashrc
+fi
+
+export EDITOR=vim
+
+if which ruby >/dev/null && which gem >/dev/null; then
+    PATH="$(ruby -rubygems -e 'puts Gem.user_dir')/bin:$PATH"
+fi
+
+{% endif %}
+{% if enable_virtualenv_wrapper %}
+######################################
+# Python Virtual Environment Wrapper #
+######################################
+if [ -f /usr/local/bin/virtualenvwrapper.sh ]; then
+    source /usr/local/bin/virtualenvwrapper.sh
+fi
+
+#####################
+# Python VirtualEnv #
+#####################
+export WORKON_HOME=$HOME/.virtualenvs
+export PROJECT_HOME=~/projects
+{% endif %}
+{% if ansible_system == "Darwin" %}
+##########
+# iTerm2 #
+##########
+test -e "${HOME}/.iterm2_shell_integration.bash" && source "${HOME}/.iterm2_shell_integration.bash"
+
+#################
+# OS X Terminal #
+#################
+bind 'set mark-symlinked-directories on' # Adds / to end of tab complete. i.e. /etc -> /etc/
+
+# Mac OS X:
+## arrow up
+bind '"\e[A": history-search-backward'
+
+## arrow down
+bind '"\e[B": history-search-forward'
+# Type the first character(s) of something you want to find in your history and press the 'up' arrow :arrow_up:
+{% endif %}

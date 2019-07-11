@@ -1,0 +1,14 @@
+---
+
+packages_to_install:
+  - tmux
+  - ruby
+  - git
+  - rsync
+  - "http://mirror.centos.org/centos/7/sclo/x86_64/rh/rh-ruby23/rh-ruby23-2.2-7.el7.x86_64.rpm"
+
+gem_executable: /opt/rh/rh-ruby23/root/usr/bin/gem
+
+pip_executable: /usr/local/bin/pip
+
+bash_profile_file: .bashrc

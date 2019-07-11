@@ -1,0 +1,67 @@
+---
+# defaults file for ansible-dotfiles
+
+username: "{{ ansible_user }}"
+user_dir: "{{ ansible_user_dir }}"
+
+facts_to_gather:
+  - ansible_pkg_mgr
+  - ansible_distribution
+  - ansible_distribution_major_version
+  - ansible_os_family
+  - ansible_system
+  - ansible_user_dir
+
+cache_dir: cache
+cache_path: "{{ playbook_dir }}/../{{ cache_dir }}"
+
+dotfiles_cache_dir: "{{ playbook_dir }}/../{{ cache_dir }}"
+
+git_repositories_to_checkout: []
+
+remote_dotfile_location: "{{ user_dir }}/.dotfiles"
+wipe_dotfiles: false
+
+dirs_to_make:
+  - "{{ user_dir }}/.ssh/tmp"
+  - "{{ remote_dotfile_location }}"
+
+files_to_sync: []
+
+symlinks_to_create: []
+
+extra_symlinks_to_create: []
+
+dotfiles_to_include: "$(ls {{ remote_dotfile_location }}/ | xargs)"
+
+## Use this: dotfiles_to_include | join(' ')
+# dotfiles_to_include:
+#   - bash_aliases
+#   - bash_env
+#   - bash_functions
+
+enable_virtualenv_wrapper: false
+
+bash_profile_file: .bashrc
+
+shell_commands: []
+
+SSH_CONFIG_HEADER: |
+  ###############################
+  ## SSH Config file           ##
+  ###############################
+  ControlMaster auto
+  ControlPath ~/.ssh/tmp/%h_%p_%r
+  
+
+SSH_CONFIG_FOOTER: |
+  ####################
+  # Default Username #
+  ####################
+  Host *
+    User {{ username }}
+
+  ##############
+  # SSH CONFIG #
+  ##############
+  ForwardAgent yes

@@ -1,0 +1,13 @@
+---
+
+packages_to_install:
+  - tmux
+  - ruby
+  - git
+  - rsync
+
+gem_executable: /usr/bin/gem
+
+pip_executable: /usr/bin/pip
+
+bash_profile_file: .bashrc

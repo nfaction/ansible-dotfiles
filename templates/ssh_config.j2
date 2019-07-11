@@ -1,0 +1,17 @@
+{{ SSH_CONFIG_HEADER }}
+{% if SSH_CONFIG_PERSONAL is defined %}
+############
+# Personal #
+############
+{{ SSH_CONFIG_PERSONAL }}
+{% endif %}
+{% if SSH_CONFIG_WORK is defined %}
+########
+# Work #
+########
+{{ SSH_CONFIG_WORK }}
+{% endif %}
+{% if SSH_CONFIG_EXTRA is defined %}
+{{ SSH_CONFIG_EXTRA }}
+{% endif %}
+{{ SSH_CONFIG_FOOTER }}

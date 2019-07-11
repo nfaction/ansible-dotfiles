@@ -1,0 +1,7 @@
+---
+
+gem_executable: /usr/local/bin/gem
+
+pip_executable: /usr/local/bin/pip
+
+bash_profile_file: .bash_profile
