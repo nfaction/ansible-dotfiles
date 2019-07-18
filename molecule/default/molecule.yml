@@ -17,6 +17,8 @@ provisioner:
   name: ansible
   lint:
     name: ansible-lint
+    options:
+      x: ["ANSIBLE0013"]
 verifier:
   name: testinfra
   lint:

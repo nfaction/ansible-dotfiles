@@ -101,7 +101,7 @@
 - name: install pip
   easy_install:
     name: pip
-    state: latest
+    state: present
   become: yes
   when: ansible_os_family != "Debian"
 
@@ -124,10 +124,11 @@
 - name: install gems
   gem:
     name: tmuxinator
-    state: latest
+    state: present
     executable: "{{ gem_executable }}"
     env_shebang: yes
   become: yes
+  ignore_errors: true
   tags:
     - tmuxinator
 
@@ -160,7 +161,7 @@
     state: present
     key: '{{ item }}'
   with_items:
-    - '{{ SSH_KEYS_ADD }}'
+    - '{{ SSH_KEYS_ADD | default([]) }}'
   tags:
     - ssh-keys
 
@@ -268,6 +269,7 @@
 - name: run erroneous commands
   shell: '{{ item }}'
   with_items: "{{ shell_commands }}"
+  changed_when: false
   failed_when: false
   tags:
     - shell

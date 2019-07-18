@@ -1,7 +1,7 @@
 ---
 # defaults file for ansible-dotfiles
 
-username: "{{ ansible_user }}"
+username: "{{ ansible_user | default('') }}"
 user_dir: "{{ ansible_user_dir }}"
 
 facts_to_gather:
@@ -52,7 +52,7 @@ SSH_CONFIG_HEADER: |
   ###############################
   ControlMaster auto
   ControlPath ~/.ssh/tmp/%h_%p_%r
-  
+
 
 SSH_CONFIG_FOOTER: |
   ####################
