@@ -1,8 +1,8 @@
 ---
 
 packages_to_install:
-  - python-pip
   - python-setuptools
+  - python-pip
   - tmux
   - ruby
   - git

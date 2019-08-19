@@ -1,30 +1,28 @@
 ---
-# defaults file for ansible-dotfiles
+# Workarounds for running the playbook in this role
+ansible_root_dir: "{{ playbook_dir }}"
+ansible_root_dir_roles_path: "{{ ansible_root_dir }}/roles"
 
 username: "{{ ansible_user | default('') }}"
 user_dir: "{{ ansible_user_dir }}"
 
-facts_to_gather:
-  - ansible_pkg_mgr
-  - ansible_distribution
-  - ansible_distribution_major_version
-  - ansible_os_family
-  - ansible_system
-  - ansible_user_dir
-
 cache_dir: cache
-cache_path: "{{ playbook_dir }}/../{{ cache_dir }}"
+cache_path: "{{ ansible_root_dir }}/{{ cache_dir }}"
 
-dotfiles_cache_dir: "{{ playbook_dir }}/../{{ cache_dir }}"
+dotfiles_cache_dir: "{{ ansible_root_dir }}/{{ cache_dir }}"
 
 git_repositories_to_checkout: []
 
 remote_dotfile_location: "{{ user_dir }}/.dotfiles"
 wipe_dotfiles: false
 
-dirs_to_make:
+default_dirs_to_make:
   - "{{ user_dir }}/.ssh/tmp"
+  - "{{ user_dir }}/.ssh/config.d"
   - "{{ remote_dotfile_location }}"
+
+dirs_to_make:
+  - "{{ default_dirs_to_make }}"
 
 files_to_sync: []
 
@@ -46,22 +44,32 @@ bash_profile_file: .bashrc
 
 shell_commands: []
 
-SSH_CONFIG_HEADER: |
-  ###############################
-  ## SSH Config file           ##
-  ###############################
+##############
+# SSH Config #
+##############
+ssh_config_header: |
+  #####################
+  ## SSH Config file ##
+  #####################
   ControlMaster auto
   ControlPath ~/.ssh/tmp/%h_%p_%r
 
+ssh_config_d_files: []
 
-SSH_CONFIG_FOOTER: |
+ssh_config_extras: ""
+
+ssh_config_footer: |
   ####################
   # Default Username #
   ####################
   Host *
     User {{ username }}
 
-  ##############
-  # SSH CONFIG #
-  ##############
+  ################
+  # SSH Defaults #
+  ################
   ForwardAgent yes
+
+ssh_public_keys: []
+
+ssh_private_keys: []
