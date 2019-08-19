@@ -1,60 +1,9 @@
 ---
-# tasks file for ansible-dotfiles
-
-####################
-# OS Bootstrapping #
-####################
-- name: manually determine OS
-  raw: 'cat /etc/redhat-release'
-  register: os_version
-  failed_when: false
-  changed_when: false
-  tags: fedora-prep
-
-- name: install python and deps for ansible modules
-  raw: sudo dnf install -y python2 python2-dnf libselinux-python sudo
-  when: os_version.stdout.find('Fedora') != -1
-  become: yes
-  tags: fedora-prep
-
-- name: manually detect OS X
-  raw: uname -s
-  register: is_osx
-  failed_when: false
-  changed_when: false
-  tags: osx-prep
-
-- name: determine if homebrew is installed
-  stat:
-    path: /usr/local/bin/brew
-  register: homebrew_present
-  when: is_osx.stdout.find('Darwin') != -1
-
-- name: install homebrew for ansible modules
-  raw: /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
-  when:
-    - is_osx.stdout.find('Darwin') != -1
-    - homebrew_present is defined
-    - homebrew_present.stat.exists | bool != true
-  tags: osx-prep
-
 ################
 # Gather facts #
 ################
 - name: get facts manually
   setup:
-    filter: "{{ item }}"
-  with_items: "{{ facts_to_gather }}"
-  tags:
-    - dotfiles
-    - ssh
-    - pip
-
-- name: print out vars
-  debug:
-    var: "{{ item }}"
-    verbosity: 2
-  with_items: "{{ facts_to_gather }}"
   tags:
     - dotfiles
     - ssh
@@ -63,7 +12,7 @@
 - name: gather os specific variables
   include_vars: "{{ item }}"
   with_first_found:
-    - "{{ ansible_distribution }}-{{ ansible_distribution_major_version}}.yml"
+    - "{{ ansible_distribution }}-{{ ansible_distribution_major_version }}.yml"
     - "{{ ansible_distribution }}.yml"
     - "{{ ansible_system }}.yml"
   tags:
@@ -90,100 +39,48 @@
     version: "{{ item.branch }}"
   with_items: "{{ git_repositories_to_checkout }}"
   connection: local
+  delegate_to: localhost
   run_once: yes
   tags:
     - git
     - github
 
-########################
-# Set up remote system #
-########################
-- name: install pip
-  easy_install:
-    name: pip
-    state: present
-  become: yes
-  when: ansible_os_family != "Debian"
-
-- name: install packages
-  action: >
-    {{ ansible_pkg_mgr }} name={{ item }} state=present
-  become: yes
-  when: ansible_pkg_mgr != "homebrew"
-  with_items: "{{ packages_to_install }}"
-
-- name: install homebrew packages
-  action: >
-    {{ ansible_pkg_mgr }} name={{ item }} state=present
-  when: ansible_pkg_mgr == "homebrew"
-  with_items:
-    - tmux
-    - ruby
-    - git
-
-- name: install gems
-  gem:
-    name: tmuxinator
-    state: present
-    executable: "{{ gem_executable }}"
-    env_shebang: yes
-  become: yes
-  ignore_errors: true
-  tags:
-    - tmuxinator
-
-- name: install pip
-  easy_install:
-    name: pip
-    state: present
-  when: enable_virtualenv_wrapper | bool
-  become: yes
-  tags:
-    - pip
-
-- name: install pip packages
-  pip:
-    name: "{{ item }}"
-    state: present
-    executable: "{{ pip_executable }}"
-    extra_args: --ignore-installed six
-  when: enable_virtualenv_wrapper | bool
-  become: yes
-  with_items:
-    - virtualenv
-    - virtualenvwrapper
-  tags:
-    - pip
-
+# ########################
+# # Set up remote system #
+# ########################
 - name: add ssh keys to authorized_keys
   authorized_key:
-    user: '{{ username }}'
-    state: present
-    key: '{{ item }}'
+    user: "{{ item.username | default(username) }}"
+    state: "{{ item.state | default('present') }}"
+    key: "{{ item.key }}"
   with_items:
-    - '{{ SSH_KEYS_ADD | default([]) }}'
-  tags:
-    - ssh-keys
-
-- name: populate ssh private key
-  copy:
-    content: "{{ SSH_KEYS.PRIVATE }}"
-    dest: "{{ user_dir }}/.ssh/id_rsa"
-    owner: "{{ username }}"
-    mode: 0600
-    backup: yes
-  when: SSH_KEYS is defined
+    - "{{ ssh_public_keys | default([]) }}"
+  when:
+    - (item.add_to_auth_keys | default(true)) | bool
   tags:
     - ssh-keys
 
 - name: populate ssh public key
   copy:
-    content: "{{ SSH_KEYS.PUBLIC }}"
-    dest: "{{ user_dir }}/.ssh/id_rsa.pub"
-    owner: "{{ username }}"
+    content: "{{ item.key }}"
+    dest: "{{ user_dir }}/.ssh/{{ item.key_name }}"
+    owner: "{{ item.username | default(username) }}"
     mode: 0600
     backup: yes
-  when: SSH_KEYS is defined
+  with_items:
+    - "{{ ssh_public_keys }}"
+  tags:
+    - ssh-keys
+
+- name: populate ssh private key
+  copy:
+    content: "{{ item.content }}"
+    dest: "{{ user_dir }}/.ssh/{{ item.key_name }}"
+    owner: "{{ item.username | default(username) }}"
+    mode: 0600
+    backup: yes
+  with_items:
+    - "{{ ssh_private_keys }}"
   tags:
     - ssh-keys
 

@@ -1,9 +1,10 @@
 ---
-- name: Converge
+
+- name: configure dotfiles
   hosts: all
+  # gather_facts: false
   vars:
     roles_dir: roles
-
   pre_tasks:
     # Workaround to run playbook inside this role.
     - name: set playbook dir when running this playbook here

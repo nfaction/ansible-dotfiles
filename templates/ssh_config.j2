@@ -1,17 +1,14 @@
-{{ SSH_CONFIG_HEADER }}
-{% if SSH_CONFIG_PERSONAL is defined %}
-############
-# Personal #
-############
-{{ SSH_CONFIG_PERSONAL }}
+{{ ssh_config_header }}
+{% if (ssh_config_d_files is defined) and ssh_config_d_files %}
+##########################
+# .ssh/config.d Includes #
+##########################
+Host *
+{% for config in ssh_config_d_files %}
+  Include ~/.ssh/config.d/{{ config }}
+{% endfor %}
 {% endif %}
-{% if SSH_CONFIG_WORK is defined %}
-########
-# Work #
-########
-{{ SSH_CONFIG_WORK }}
+{% if (ssh_config_extras is defined) and ssh_config_extras %}
+{{ ssh_config_extras }}
 {% endif %}
-{% if SSH_CONFIG_EXTRA is defined %}
-{{ SSH_CONFIG_EXTRA }}
-{% endif %}
-{{ SSH_CONFIG_FOOTER }}
+{{ ssh_config_footer }}
