@@ -163,6 +163,38 @@
     - ssh
     - ssh-config
 
+###################################
+# Create Custom Files/Directories #
+###################################
+- name: Create/delete and directories or files
+  file:
+    src: "{{ item.src | default(omit) }}"
+    dest: "{{ item.dest }}"
+    owner: "{{ item.user | default(omit) }}"
+    group: "{{ item.group | default(omit) }}"
+    mode: "{{ item.mode | default(omit) }}"
+    state: "{{ item.state }}"
+    force: "{{ item.force | default(omit) }}"
+  with_items:
+    - "{{ custom_files_dirs | default([]) }}"
+  tags:
+    - custom-files
+
+- name: populate custom files with content
+  copy:
+    content: "{{ item.content }}"
+    dest: "{{ item.path }}"
+    owner: "{{ item.username | default(username) }}"
+    mode: "{{ item.mode | default('0600') }}"
+    backup: yes
+  with_items:
+    - "{{ custom_files }}"
+  tags:
+    - custom-files
+
+#################################
+# Run any custom shell commands #
+#################################
 - name: run erroneous commands
   shell: '{{ item }}'
   with_items: "{{ shell_commands }}"

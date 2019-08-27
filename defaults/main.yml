@@ -73,3 +73,6 @@ ssh_config_footer: |
 ssh_public_keys: []
 
 ssh_private_keys: []
+
+custom_files_dirs: []
+custom_files: []
