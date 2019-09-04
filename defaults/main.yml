@@ -40,6 +40,8 @@ dotfiles_to_include: "$(ls {{ remote_dotfile_location }}/ | xargs)"
 
 enable_virtualenv_wrapper: false
 
+use_ruby_gem: false
+
 bash_profile_file: .bashrc
 
 shell_commands: []
