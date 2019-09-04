@@ -25,10 +25,12 @@ fi
 
 export EDITOR=vim
 
+{% if use_ruby_gem %}
 if which ruby >/dev/null && which gem >/dev/null; then
     PATH="$(ruby -rubygems -e 'puts Gem.user_dir')/bin:$PATH"
 fi
 
+{% endif %}
 {% endif %}
 {% if enable_virtualenv_wrapper %}
 ######################################
