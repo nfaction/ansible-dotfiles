@@ -1,5 +1,7 @@
 ---
 galaxy_info:
+  role_name: dotfiles
+  namespace: ansible
   author: Matthew DePorter
   description: Role to install and configure your dotfiles directories and files
   company: Mobile-Tech LLC
