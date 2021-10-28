@@ -26,7 +26,8 @@
   file:
     path: "{{ cache_path }}"
     state: directory
-  connection: local
+  delegate_to: localhost
+  run_once: yes
   tags:
     - git
 
@@ -38,7 +39,6 @@
     accept_hostkey: yes
     version: "{{ item.branch }}"
   with_items: "{{ git_repositories_to_checkout }}"
-  connection: local
   delegate_to: localhost
   run_once: yes
   tags:
