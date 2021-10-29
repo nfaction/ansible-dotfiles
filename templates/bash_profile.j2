@@ -40,11 +40,14 @@ if [ -f /usr/local/bin/virtualenvwrapper.sh ]; then
     source /usr/local/bin/virtualenvwrapper.sh
 fi
 
-#####################
-# Python VirtualEnv #
-#####################
-export WORKON_HOME=$HOME/.virtualenvs
-export PROJECT_HOME=~/projects
+#########
+# pyenv #
+#########
+if [ -f ~/.pyenv/bin/pyenv ]; then
+    export PATH="$HOME/.pyenv/bin:$PATH"
+    eval "$(pyenv init -)"
+    eval "$(pyenv virtualenv-init -)"
+fi
 {% endif %}
 {% if ansible_system == "Darwin" %}
 ##########
