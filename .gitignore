@@ -2,4 +2,4 @@
 *.pyc
 *.log
 *__pycache__*
-
+cache/*
