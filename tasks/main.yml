@@ -81,6 +81,7 @@
     owner: "{{ item.username | default(username) }}"
     mode: 0600
     backup: yes
+  no_log: true
   with_items:
     - "{{ ssh_private_keys }}"
   tags:
